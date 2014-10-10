@@ -19,8 +19,15 @@ def parse_array(s, end=0):
             nextchar = s[end:end+1]
             continue
 
+        # end of array
         if nextchar == ']':
-            return values
+            return values, end
+
+        # array
+        if nextchar == '[':
+            array, end = parse_array(s, end=end)
+            print 'appending array: %s' % array
+            values.append(array)
 
         print 'checking string'
         # string
@@ -47,7 +54,7 @@ def parse_array(s, end=0):
                 str_value += nextchar
                 end += 1
                 nextchar = s[end:end+1]
-            print 'appending %s' % str_value
+            print 'appending string: %s' % str_value
             values.append(str_value)
         end += 1
         nextchar = s[end:end+1]
@@ -60,3 +67,4 @@ def is_whitespace(char):
 if __name__ == '__main__':
     print repr(parse_array('[]'))
     print repr(parse_array(r'["Riley", "Watkins","\"Quoted\""]'))
+    print repr(parse_array(r'[["a", "b"], ["c", "d", ["e"]]]'))
