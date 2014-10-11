@@ -1,4 +1,7 @@
 def parse_array(s, end=0):
+    def _print(st):
+        print u'[parse_array] %s' % st
+
     assert s, "s is empty"
     nextchar = s[end:end+1]
     while is_whitespace(nextchar):
@@ -14,6 +17,7 @@ def parse_array(s, end=0):
     values = []
     # Add things to `values`
     while nextchar:
+        _print('nextchar: %s    end: %s' % (nextchar, end))
         if is_whitespace(nextchar):
             end += 1
             nextchar = s[end:end+1]
@@ -21,23 +25,22 @@ def parse_array(s, end=0):
 
         # end of array
         if nextchar == ']':
-            return values, end
+            break
 
         # array
         if nextchar == '[':
             array, end = parse_array(s, end=end)
-            print 'appending array: %s' % array
             values.append(array)
 
-        print 'checking string'
         # string
         if nextchar == '"':
             # start parsing string
-            print 'parsing string'
             st, end = parse_string(s, end=end)
             values.append(st)
         end += 1
         nextchar = s[end:end+1]
+
+    return values, end
 
 
 def parse_string(s, end=0):
@@ -49,9 +52,7 @@ def parse_string(s, end=0):
     nextchar = s[end:end+1]
     escape = False
     while nextchar:
-        print nextchar
         if nextchar == '\\' and not escape:
-            print 'found escape character'
             escape = True
             end += 1
             nextchar = s[end:end+1]
@@ -64,7 +65,6 @@ def parse_string(s, end=0):
         value += nextchar
         end += 1
         nextchar = s[end:end+1]
-    print 'parsed string: %s' % value
     return value, end
 
 
