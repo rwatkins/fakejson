@@ -1,3 +1,6 @@
+import re
+
+
 def parse_array(s, end=0):
     def _print(st):
         print u'[parse_array] %s' % st
@@ -26,6 +29,11 @@ def parse_array(s, end=0):
         # end of array
         if nextchar == ']':
             break
+
+        # number
+        if re.match(r'\d', nextchar):
+            num, end = parse_number(s, end)
+            values.append(num)
 
         # array
         if nextchar == '[':
@@ -68,11 +76,33 @@ def parse_string(s, end=0):
     return value, end
 
 
+def parse_number(s, end=0):
+    def _print(st):
+        print u'[parse_number] %s' % st
+
+    assert s, 's is empty'
+    nextchar = s[end:end+1]
+    # if we're parsing a number, it has to start with a digit
+    assert re.match(r'\d', nextchar)
+    value = ''
+    while nextchar:
+        _print('nextchar: %s    end: %s' % (nextchar, end))
+        if re.match(r'(\d|\.)', nextchar):
+            value += nextchar
+            end += 1
+            nextchar = s[end:end+1]
+        else:
+            break
+    return float(value) if '.' in value else int(value), end - 1
+
+
 def is_whitespace(char):
     return char and char in ' \t\n\r'
 
 
 if __name__ == '__main__':
-    print repr(parse_array('[]'))
-    print repr(parse_array(r'["Riley", "Watkins","\"Quoted\""]'))
-    print repr(parse_array(r'[["a", "b"], ["c", "d", ["e"]]]'))
+    assert parse_array('[]')[0] == []
+    assert parse_array(r'["Riley", "Watkins","\"Quoted\""]')[0] == ['Riley', 'Watkins', '"Quoted"']
+    assert parse_array(r'[["a", "b"], ["c", "d", ["e"]]]')[0] == [['a', 'b'], ['c', 'd', ['e']]]
+    assert parse_array('[1, 2, 3]')[0] == [1, 2, 3]
+    assert parse_array('[1.0, [2, 3.45], "6.0"]')[0] == [1.0, [2, 3.45], '6.0']
