@@ -1,6 +1,10 @@
 import re
 
 
+def loads(s):
+    return parse_array(s)[0]
+
+
 def parse_array(s, end=0):
     def _print(st):
         print u'[parse_array] %s' % st
@@ -20,7 +24,6 @@ def parse_array(s, end=0):
     values = []
     # Add things to `values`
     while nextchar:
-        _print('nextchar: %s    end: %s' % (nextchar, end))
         if is_whitespace(nextchar):
             end += 1
             nextchar = s[end:end+1]
@@ -86,7 +89,6 @@ def parse_number(s, end=0):
     assert re.match(r'\d', nextchar)
     value = ''
     while nextchar:
-        _print('nextchar: %s    end: %s' % (nextchar, end))
         if re.match(r'(\d|\.)', nextchar):
             value += nextchar
             end += 1
