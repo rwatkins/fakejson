@@ -24,6 +24,9 @@ class ParseObjectTest(TestCase):
             'aliases': ['Jack the Ripper', 'O.G. Nice Guy'],
         })
 
+    def test_empty_object(self):
+        self.assertEqual(fakejson.loads('{}'), {})
+
 
 if __name__ == '__main__':
     unittest.main()

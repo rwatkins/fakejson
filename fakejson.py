@@ -46,6 +46,9 @@ def parse_object(s, end=0):
             end += 1
             nextchar = s[end:end+1]
 
+        if nextchar == '}':
+            return obj, end
+
         if nextchar != '"':
             raise Exception("Expected \", got %s\nso far: %s\nwhole thing: %s"
                             % (nextchar, s[:end], s))
