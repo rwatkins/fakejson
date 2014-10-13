@@ -2,7 +2,115 @@ import re
 
 
 def loads(s):
-    return parse_array(s)[0]
+    end = 0
+    nextchar = s[end:end+1]
+    while is_whitespace(nextchar):
+        end += 1
+        nextchar = s[end:end+1]
+
+    val = None
+    if nextchar == '{':
+        val, end = parse_object(s, end=end)
+    elif nextchar == '[':
+        val, end = parse_array(s, end=end)
+
+    if val is None:
+        raise Exception("No value found in input string")
+
+    end += 1
+    nextchar = s[end:end+1]
+
+    # Check for extra non-whitespace characters after value
+    while is_whitespace(nextchar):
+        end += 1
+        nextchar = s[end:end+1]
+
+    if nextchar:
+        raise Exception("Extra data found in input string")
+
+    return val
+
+
+def parse_object(s, end=0):
+    def _print(st):
+        print '[parse_object] %s' % st
+
+    obj = {}
+    while True:
+        end += 1
+        nextchar = s[end:end+1]
+        _print('nextchar: %s    end: %s' % (nextchar, end))
+        # parse key
+        print 'parse key'
+        while is_whitespace(nextchar):
+            end += 1
+            nextchar = s[end:end+1]
+
+        if nextchar != '"':
+            raise Exception("Expected \", got %s\nso far: %s\nwhole thing: %s"
+                            % (nextchar, s[:end], s))
+
+        key, end = parse_string(s, end=end)
+        end += 1
+        nextchar = s[end:end+1]
+        while is_whitespace(nextchar):
+            end += 1
+            nextchar = s[end:end+1]
+
+        if nextchar != ':':
+            raise Exception("Expected :, got %s" % nextchar)
+
+        # parse value
+        print 'parse value'
+        end += 1
+        nextchar = s[end:end+1]
+        while is_whitespace(nextchar):
+            end += 1
+            nextchar = s[end:end+1]
+
+        value, end = parse_object_value(s, end=end)
+
+        obj[key] = value
+        end += 1
+        nextchar = s[end:end+1]
+        print 'obj[%r] = %r' % (key, value)
+        while is_whitespace(nextchar):
+            end += 1
+            nextchar = s[end:end+1]
+
+        print 'nextchar: %s' % nextchar
+        if nextchar == ',':
+            _print('Found comma! Continuing...')
+            continue
+        elif nextchar == '}':
+            break
+
+    return obj, end
+
+
+def parse_object_value(s, end=0):
+    """
+    Allowed return values: object, array, string, number, null
+    """
+    def _print(st=''):
+        print '[parse_object_value] %s' % st
+
+    nextchar = s[end:end+1]
+    _print('nextchar: %s    end: %s' % (nextchar, end))
+    value = None
+    if nextchar == '{':
+        value, end = parse_object(s, end=end)
+    elif nextchar == '[':
+        value, end = parse_array(s, end=end)
+    elif nextchar == '"':
+        value, end = parse_string(s, end=end)
+    elif re.match(r'\d', nextchar):
+        value, end = parse_number(s, end=end)
+    else:
+        raise Exception("Don't know how to parse value starting with %s" %
+                        nextchar)
+
+    return value, end
 
 
 def parse_array(s, end=0):
