@@ -27,6 +27,14 @@ class ParseObjectTest(TestCase):
     def test_empty_object(self):
         self.assertEqual(fakejson.loads('{}'), {})
 
+    def test_extra_data(self):
+        try:
+            fakejson.loads("{} ,")
+        except Exception as e:
+            self.assertEqual(str(e), 'Extra data found in input string')
+        else:
+            self.fail("Expected to get an error")
+
 
 if __name__ == '__main__':
     unittest.main()
