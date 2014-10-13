@@ -211,11 +211,3 @@ def parse_number(s, end=0):
 
 def is_whitespace(char):
     return char and char in ' \t\n\r'
-
-
-if __name__ == '__main__':
-    assert parse_array('[]')[0] == []
-    assert parse_array(r'["Riley", "Watkins","\"Quoted\""]')[0] == ['Riley', 'Watkins', '"Quoted"']
-    assert parse_array(r'[["a", "b"], ["c", "d", ["e"]]]')[0] == [['a', 'b'], ['c', 'd', ['e']]]
-    assert parse_array('[1, 2, 3]')[0] == [1, 2, 3]
-    assert parse_array('[1.0, [2, 3.45], "6.0"]')[0] == [1.0, [2, 3.45], '6.0']
