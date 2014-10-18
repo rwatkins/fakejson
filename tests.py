@@ -36,5 +36,13 @@ class ParseObjectTest(TestCase):
             self.fail("Expected to get an error")
 
 
+class ParseBooleanTest(TestCase):
+    def test_true(self):
+        self.assertEqual(fakejson.loads('{"is on": true}'), {'is on': True})
+
+    def test_false(self):
+        self.assertEqual(fakejson.loads('{"is on": false}'), {'is on': False})
+
+
 if __name__ == '__main__':
     unittest.main()

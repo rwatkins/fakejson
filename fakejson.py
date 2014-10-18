@@ -39,19 +39,21 @@ def parse_object(s, end=0):
     while True:
         end += 1
         nextchar = s[end:end+1]
-        _print('nextchar: %s    end: %s' % (nextchar, end))
         # parse key
-        print 'parse key'
         while is_whitespace(nextchar):
             end += 1
             nextchar = s[end:end+1]
 
         if nextchar == '}':
             return obj, end
+        elif not nextchar:
+            raise Exception("Parsing object: Unexpected end of string\n"
+                            "so far: %s" % s[:end])
 
         if nextchar != '"':
-            raise Exception("Expected \", got %s\nso far: %s\nwhole thing: %s"
-                            % (nextchar, s[:end], s))
+            raise Exception("Parsing object key: Expected \", got %s\n"
+                            "so far: %s\nwhole thing: %s" %
+                            (nextchar, s[:end], s))
 
         key, end = parse_string(s, end=end)
         end += 1
@@ -64,7 +66,6 @@ def parse_object(s, end=0):
             raise Exception("Expected :, got %s" % nextchar)
 
         # parse value
-        print 'parse value'
         end += 1
         nextchar = s[end:end+1]
         while is_whitespace(nextchar):
@@ -76,16 +77,13 @@ def parse_object(s, end=0):
         obj[key] = value
         end += 1
         nextchar = s[end:end+1]
-        print 'obj[%r] = %r' % (key, value)
         while is_whitespace(nextchar):
             end += 1
             nextchar = s[end:end+1]
 
-        print 'nextchar: %s' % nextchar
         if nextchar == ',':
-            _print('Found comma! Continuing...')
             continue
-        elif nextchar == '}':
+        elif not nextchar or nextchar == '}':
             break
 
     return obj, end
@@ -99,7 +97,6 @@ def parse_object_value(s, end=0):
         print '[parse_object_value] %s' % st
 
     nextchar = s[end:end+1]
-    _print('nextchar: %s    end: %s' % (nextchar, end))
     value = None
     if nextchar == '{':
         value, end = parse_object(s, end=end)
@@ -109,6 +106,10 @@ def parse_object_value(s, end=0):
         value, end = parse_string(s, end=end)
     elif re.match(r'\d', nextchar):
         value, end = parse_number(s, end=end)
+    elif s[end:end+4] == 'true':
+        value, end = True, end + 4
+    elif s[end:end+5] == 'false':
+        value, end = False, end + 5
     else:
         raise Exception("Don't know how to parse value starting with %s" %
                         nextchar)
