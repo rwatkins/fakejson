@@ -44,5 +44,11 @@ class ParseBooleanTest(TestCase):
         self.assertEqual(fakejson.loads('{"is on": false}'), {'is on': False})
 
 
+class ParseNullTest(TestCase):
+    def test_null(self):
+        self.assertEqual(fakejson.loads('{"is null": null}'),
+                         {'is null': None})
+
+
 if __name__ == '__main__':
     unittest.main()

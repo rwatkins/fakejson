@@ -91,7 +91,7 @@ def parse_object(s, end=0):
 
 def parse_object_value(s, end=0):
     """
-    Allowed return values: object, array, string, number, null
+    Allowed return values: object, array, string, number, boolean, null
     """
     def _print(st=''):
         print '[parse_object_value] %s' % st
@@ -110,6 +110,8 @@ def parse_object_value(s, end=0):
         value, end = True, end + 4
     elif s[end:end+5] == 'false':
         value, end = False, end + 5
+    elif s[end:end+4] == 'null':
+        value, end = None, end + 4
     else:
         raise Exception("Don't know how to parse value starting with %s" %
                         nextchar)
